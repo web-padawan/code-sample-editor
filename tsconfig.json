@@ -20,6 +20,8 @@
     "src/**/*.ts",
     "test/**/*.ts",
     "custom_typings/**/*.d.ts",
+    "sw.ts",
+    "monaco/*"
   ],
   "exclude": [
     "test/fixtures/**/*.*",

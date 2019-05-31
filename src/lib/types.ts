@@ -67,7 +67,6 @@ export enum MESSAGE_TYPES {
 }
 
 export type Message = EstablishHandshake | HandshakeRecieved;
-
 export interface EstablishHandshake {
   type: MESSAGE_TYPES.ESTABLISH_HANDSHAKE;
 }

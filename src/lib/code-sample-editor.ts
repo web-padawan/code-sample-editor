@@ -6,7 +6,9 @@ import { endWithSlash, generateUniqueSessionId, fetchProject, addFileRecordFromN
 import * as Comlink from 'comlink';
 
 import './code-sample-editor-layout';
+import "./code-sample-editor-editor";
 import { SwControllerAPI } from '../sw';
+import { CodeSampleEditorEditor } from './code-sample-editor-editor';
 
 @customElement('code-sample-editor')
 export class CodeSampleEditor extends LitElement {
@@ -19,9 +21,8 @@ export class CodeSampleEditor extends LitElement {
   @query('#editorIframe')
   editorFrame?: HTMLIFrameElement;
 
-
-  @queryAll('code-sample-editor-layout textarea')
-  editorTextareas!: NodeListOf<CodeEditorTextarea>;
+  @queryAll('code-sample-editor-editor')
+  editorTextareas!: Array<CodeSampleEditorEditor>;
 
   private shouldRenderFrame = false;
   private lastProjectPath?: string;
@@ -66,7 +67,7 @@ export class CodeSampleEditor extends LitElement {
     return fetchProject(projectPath);
   }
 
-  private async generateEditorDom (projectFetched: Promise<FileRecord[]>): Promise<TemplateResult[]> {
+  private async generateEditorDom(projectFetched: Promise<FileRecord[]>): Promise<TemplateResult[]> {
     const fileRecords = await projectFetched;
     let firstEditor = true;
     const tabs: TemplateResult[] = fileRecords.map(fileRecord => {
@@ -81,14 +82,14 @@ export class CodeSampleEditor extends LitElement {
             ?selected=${firstEditor}>
           ${fileRecord.name}.${fileRecord.extension}
         </span>
-        <textarea
+        <code-sample-editor-editor
             slot="editor"
             class=${classIdentifier}
             ?selected=${firstEditor}
-            .value=${fileRecord.content}
+            .initValue=${fileRecord.content}
             .name=${fileRecord.name}
             .extension=${fileRecord.extension}>
-        </textarea>
+        </code-sample-editor-editor>
       `;
 
       firstEditor = false;
@@ -98,16 +99,16 @@ export class CodeSampleEditor extends LitElement {
     return tabs;
   }
 
-  private getFileRecordsFromClient() {
+  private async getFileRecordsFromClient(): Promise<FileRecord[]> {
     const textareas = this.editorTextareas;
-    const fileRecords: FileRecord[] = Array.from(textareas).map(e => {
+    const fileRecords: Promise<FileRecord>[] = Array.from(textareas).map(async e => {
       const name = e.name;
       const extension = e.extension;
-      const content = e.value;
+      const content = await e.getValue();
       return {name, extension, content};
     });
 
-    return fileRecords;
+    return await Promise.all(fileRecords);
   }
 
   private async saveFiles (fileRecords: FileRecord[]) {
@@ -122,8 +123,8 @@ export class CodeSampleEditor extends LitElement {
     this.sendContentsToSw();
   }
 
-  private onSave (e: Event) {
-    const fileRecords = this.getFileRecordsFromClient();
+  private async onSave (e: Event) {
+    const fileRecords = await this.getFileRecordsFromClient();
     this.saveFiles(fileRecords);
   }
 
@@ -142,7 +143,7 @@ export class CodeSampleEditor extends LitElement {
 
   private async onCreateFile (e: CustomEvent) {
     const rawFileName: string|undefined = e.detail;
-    const oldFileRecords = this.getFileRecordsFromClient();
+    const oldFileRecords = await this.getFileRecordsFromClient();
     const newFileRecords = addFileRecordFromName(rawFileName, oldFileRecords);
     if (newFileRecords) {
       await this.saveFiles(newFileRecords);

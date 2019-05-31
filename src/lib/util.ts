@@ -22,7 +22,7 @@ export const generateUniqueSessionId = ():string => {
   return sessionId;
 };
 
-const establishMessageChannelHandshake = (messageTarget: ServiceWorker):Promise<MessagePort> => {
+export const establishMessageChannelHandshake = (messageTarget: ServiceWorker | Window):Promise<MessagePort> => {
   return new Promise((res) => {
     const mc = new MessageChannel();
     const establishHandshakeMessage: Message = {
@@ -39,9 +39,38 @@ const establishMessageChannelHandshake = (messageTarget: ServiceWorker):Promise<
 
     mc.port1.addEventListener('message', onMcResponse);
     mc.port1.start();
-    messageTarget.postMessage(establishHandshakeMessage, [mc.port2]);
+    if ('scriptURL' in messageTarget) {
+      // is SW
+      messageTarget.postMessage(establishHandshakeMessage, [mc.port2]);
+    } else {
+      messageTarget.postMessage(establishHandshakeMessage, '*', [mc.port2]);
+    }
   });
 };
+
+export const recieveMessageChannelHandshake = (messageTarget = window):Promise<MessagePort> => {
+  return new Promise((res) => {
+    const onMessage = (e: MessageEvent) => {
+      const data:Message = e.data;
+
+      if (data.type === MESSAGE_TYPES.ESTABLISH_HANDSHAKE) {
+        const ports = e.ports;
+        if (ports && ports[0]) {
+          const port = ports[0];
+          port.start();
+          const handshakeReceivedMessage: Message = {
+            type: MESSAGE_TYPES.HANDSHAKE_RECEIVED,
+          }
+          res(port);
+          messageTarget.removeEventListener('message', onMessage);
+          port.postMessage(handshakeReceivedMessage);
+        }
+      }
+    }
+
+    messageTarget.addEventListener('message', onMessage);
+  });
+}
 
 const getSwDir = () => {
   const currentFilepath = import.meta.url;
