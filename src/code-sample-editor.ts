@@ -5,6 +5,8 @@ import { EMPTY_INDEX, ACCEPTABLE_EXTENSIONS } from './constants';
 import { setUpServiceWorker, establishMessageChannelHandshake, endWithSlash, generateUniqueSessionId, clearSession, fetchProject, addFileRecordFromName } from './util';
 
 import './code-sample-editor-layout';
+import "./code-sample-editor-editor";
+import { CodeSampleEditorEditor } from './code-sample-editor-editor';
 
 @customElement('code-sample-editor')
 export class CodeSampleEditor extends LitElement {
@@ -18,8 +20,8 @@ export class CodeSampleEditor extends LitElement {
   editorFrame?: HTMLIFrameElement;
 
 
-  @queryAll('code-sample-editor-layout textarea')
-  editorTextareas!: NodeListOf<CodeEditorTextarea>;
+  @queryAll('[slot="editor"]')
+  editorTextareas!: NodeListOf<CodeSampleEditorEditor>;
 
   private shouldRenderFrame = false;
   private lastProjectPath?: string;
@@ -127,14 +129,14 @@ export class CodeSampleEditor extends LitElement {
             ?selected=${firstEditor}>
           ${fileRecord.name}.${fileRecord.extension}
         </span>
-        <textarea
+        <code-sample-editor-editor
             slot="editor"
             class=${classIdentifier}
             ?selected=${firstEditor}
             .value=${fileRecord.content}
             .name=${fileRecord.name}
             .extension=${fileRecord.extension}>
-        </textarea>
+        </code-sample-editor-editor>
       `;
 
       firstEditor = false;
@@ -149,7 +151,7 @@ export class CodeSampleEditor extends LitElement {
     const fileRecords: FileRecord[] = Array.from(textareas).map(e => {
       const name = e.name;
       const extension = e.extension;
-      const content = e.value;
+      const content = e.getValue();
       return {name, extension, content};
     });
 
@@ -242,6 +244,10 @@ export class CodeSampleEditor extends LitElement {
       iframe {
         height: 100%;
         width: 50%;
+      }
+
+      [slot='editor'] {
+        height: 100%;
       }
     `;
   }

@@ -25,7 +25,6 @@ declare global {
   }
 }
 
-
 export type AcceptableExtensions = 'js'|'ts'|'html';
 
 export interface CodeEditorTextarea extends HTMLTextAreaElement {
