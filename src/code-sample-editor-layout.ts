@@ -21,12 +21,13 @@ export class CodeSampleEditorLayout extends LitElement {
 
       #tabs ::slotted([slot="tab"]) {
         padding: 0 6px 0 6px;
-        border: solid black 1px;
+        border: solid #272822 1px;
+        color: #272822;
       }
 
       #tabs ::slotted([slot="tab"][selected]) {
-        background-color: black;
-        color: white;
+        background-color: #272822;
+        color: #f8f8f2;
       }
 
       #tabs ::slotted([slot="tab"]:hover) {
@@ -39,6 +40,12 @@ export class CodeSampleEditorLayout extends LitElement {
 
       #editAreas ::slotted([slot="editor"]:not([selected])) {
         display: none;
+      }
+
+      button {
+        border-radius: 5px;
+        background-color: #272822;
+        color: #f8f8f2;
       }
     `;
   }

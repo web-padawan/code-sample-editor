@@ -13,9 +13,11 @@
   "author": "",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@types/codemirror": "0.0.74",
     "polyserve": "^0.27.15"
   },
   "dependencies": {
+    "codemirror": "^5.47.0",
     "lit-element": "^2.1.0",
     "lit-html": "^1.0.0"
   }

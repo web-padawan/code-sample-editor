@@ -1,10 +1,12 @@
 import { LitElement, html, customElement, css, property, TemplateResult, query, queryAll } from 'lit-element';
 import { until } from 'lit-html/directives/until';
-import { FileRecord, CodeEditorTextarea, Message, MESSAGE_TYPES, ProjectContent, ClearContents, AcceptableExtensions } from './types';
-import { EMPTY_INDEX, ACCEPTABLE_EXTENSIONS } from './constants';
+import { FileRecord, Message, MESSAGE_TYPES } from './types';
+import { EMPTY_INDEX } from './constants';
 import { setUpServiceWorker, establishMessageChannelHandshake, endWithSlash, generateUniqueSessionId, clearSession, fetchProject, addFileRecordFromName } from './util';
+import { CodeSampleEditorEditor } from './code-sample-editor-editor';
 
 import './code-sample-editor-layout';
+import './code-sample-editor-editor';
 
 @customElement('code-sample-editor')
 export class CodeSampleEditor extends LitElement {
@@ -18,8 +20,8 @@ export class CodeSampleEditor extends LitElement {
   editorFrame?: HTMLIFrameElement;
 
 
-  @queryAll('code-sample-editor-layout textarea')
-  editorTextareas!: NodeListOf<CodeEditorTextarea>;
+  @queryAll('code-sample-editor-editor')
+  editorTextareas!: NodeListOf<CodeSampleEditorEditor>;
 
   private shouldRenderFrame = false;
   private lastProjectPath?: string;
@@ -127,14 +129,14 @@ export class CodeSampleEditor extends LitElement {
             ?selected=${firstEditor}>
           ${fileRecord.name}.${fileRecord.extension}
         </span>
-        <textarea
+        <code-sample-editor-editor
             slot="editor"
             class=${classIdentifier}
             ?selected=${firstEditor}
             .value=${fileRecord.content}
             .name=${fileRecord.name}
             .extension=${fileRecord.extension}>
-        </textarea>
+        </code-sample-editor-editor>
       `;
 
       firstEditor = false;
