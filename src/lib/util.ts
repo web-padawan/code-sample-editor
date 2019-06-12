@@ -22,7 +22,7 @@ export const generateUniqueSessionId = ():string => {
   return sessionId;
 };
 
-export const establishMessageChannelHandshake = (messageTarget: ServiceWorker | Window):Promise<MessagePort> => {
+const establishMessageChannelHandshake = (messageTarget: ServiceWorker | Window):Promise<MessagePort> => {
   return new Promise((res) => {
     const mc = new MessageChannel();
     const establishHandshakeMessage: Message = {

@@ -1,5 +1,6 @@
-import nodeResolve from 'rollup-plugin-node-resolve';
+import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss'
+import sw from './rollup-sw.config.js'
 
 export default [{
   input: 'monaco/monaco.js',
@@ -8,7 +9,7 @@ export default [{
     format: 'esm'
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     }),
@@ -28,7 +29,7 @@ export default [{
     globals: ['self']
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     })
@@ -43,7 +44,7 @@ export default [{
     globals: ['self']
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     })
@@ -58,7 +59,7 @@ export default [{
     globals: ['self']
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     })
@@ -73,7 +74,7 @@ export default [{
     globals: ['self']
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     })
@@ -88,19 +89,11 @@ export default [{
     globals: ['self']
   },
   plugins: [
-    nodeResolve({
+    resolve({
       jsnext: true,
       main: true
     })
   ]
 },
-{
-  input: 'sw.js',
-  output: {
-    file: 'sw.js',
-    format: 'iife',
-    name: 'CMESW'
-  },
-  plugins: [resolve()],
-}
+sw
 ];

@@ -5,12 +5,10 @@
   "module": "lib/index.js",
   "scripts": {
     "build": "tsc && rollup -c rollup.config.js",
-    "watch": "tsc-watch --onSuccess \"rollup -c rollup.config.js\"",
-    "postinstall": "npm run bootstrap",
+    "watch": "tsc-watch --onSuccess \"rollup -c rollup-sw.config.js\"",
     "serve": "polyserve --npm -H 0.0.0.0 --compile never",
-    "dev": "npm run watch & npm run serve",
-    "prepublishOnly": "npm run build",
-    "bootstrap": "cp node_modules/comlink/dist/umd/comlink.js lib/comlink.js"
+    "dev": "npm run build && npm run watch & npm run serve",
+    "prepublishOnly": "npm run build"
   },
   "author": "",
   "license": "BSD-3-Clause",

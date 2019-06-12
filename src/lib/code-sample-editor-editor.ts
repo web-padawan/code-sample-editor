@@ -3,6 +3,8 @@ import { customElement, LitElement, html, query, PropertyValues, property, css }
 import { AcceptableExtensions, Message } from './types';
 import { editor } from '../../monaco/monaco'
 import { recieveMessageChannelHandshake } from './util';
+import * as Comlink from 'comlink';
+import { MonacoIframe } from './monaco-iframe-script';
 
 
 (window.self as any)['MonacoEnvironment'] = {
@@ -44,6 +46,8 @@ export class CodeSampleEditorEditor extends LitElement {
   @query('#monacoIframe')
   monacoIframe?: HTMLIFrameElement;
 
+  private monacoIframeApi: Comlink.Remote<typeof MonacoIframe>|null = null;
+
   private monacoMessagePortEstablished: Promise<null|MessagePort> = Promise.resolve(null);
 
   private generateSrcDoc(): string | null {
@@ -55,25 +59,7 @@ export class CodeSampleEditorEditor extends LitElement {
       <html>
         <head>
           <script src="https://unpkg.com/monaco-editor@0.17.0/min/vs/loader.js"></script>
-          <script type="module">
-          require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.17.0/min/vs' }});
-          window.MonacoEnvironment = {
-            getWorkerUrl: function(workerId, label) {
-              return \`data:text/javascript;charset=utf-8,${encodeURIComponent(`
-                self.MonacoEnvironment = {
-                  baseUrl: 'https://unpkg.com/monaco-editor@0.17.0/min/'
-                };
-                importScripts('https://unpkg.com/monaco-editor@0.17.0/min/vs/base/worker/workerMain.js');`
-                .replace(/\s/g, '')
-              )}\`;
-            }
-          };
-
-          require(["vs/editor/editor.main"], function () {
-            import("../src/monaco-iframe-script.js")
-          });
-
-          </script>
+          <script type="module" src="../lib/monaco-iframe-script.js"></script>
           <style>
             body {
               height: 100vh;
@@ -104,50 +90,18 @@ export class CodeSampleEditorEditor extends LitElement {
   }
 
   async getValue(): Promise<string> {
-    const port = await this.monacoMessagePortEstablished;
-
-    if (port) {
-      const messageReceived: string|null = await new Promise(res => {
-        const onMonacoMessage = (e: MessageEvent) => {
-          const data: Message = e.data;
-          if (data.type as string === 'VALUE_RESPONSE') {
-            res((data as any).message);
-            port.removeEventListener('message', onMonacoMessage);
-          }
-        }
-
-        port.addEventListener('message', onMonacoMessage);
-
-        const message = {
-          type: 'GET_VALUE'
-        }
-        port.postMessage(message);
-      });
-
-      return messageReceived ? messageReceived : '';
-    } else {
-      return '';
-    }
+    return this.monacoIframeApi ? await this.monacoIframeApi.getValue() : '';
   }
 
   onIframeLoad = async () => {
     const iframe = this.monacoIframe!;
     const iframeWindow = iframe.contentWindow!;
-    this.monacoMessagePortEstablished = recieveMessageChannelHandshake(iframeWindow);
-    const port = await this.monacoMessagePortEstablished;
-    if (!port || this.initValue === null) {
-      return;
-    }
+    this.monacoIframeApi = Comlink.wrap<typeof MonacoIframe>(Comlink.windowEndpoint(iframeWindow));
 
-    const message = {
-      type: 'SET_VALUE',
-      message: {
-        extension: this.extension,
-        content: this.initValue
-      }
+    if (this.monacoIframeApi) {
+      const initVal = this.initValue || '';
+      this.monacoIframeApi.setValue(initVal, this.extension);
     }
-
-    port.postMessage(message)
   }
 
   render() {
