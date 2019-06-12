@@ -1,5 +1,5 @@
 import { AcceptableExtensions } from './types';
-import * as monacoImport from 'monaco-editor';
+import * as monaco from 'monaco-editor';
 import * as Comlink from 'comlink';
 
 (require as any).config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.17.0/min/vs' }});
@@ -23,7 +23,7 @@ const main = () => {
   window.addEventListener('resize', onResize, {passive: true});
   Comlink.expose(MonacoIframe, Comlink.windowEndpoint(window.parent));
 }
-let editor: monacoImport.editor.IStandaloneCodeEditor | null = null;
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 const onResize = () => {
   if (editor) {
@@ -53,7 +53,7 @@ export class MonacoIframe {
         break;
     }
 
-    editor = ((window as any).monaco as typeof monacoImport)
+    editor = ((window as any).monaco as typeof monaco)
       .editor.create(container, {value: newValue, language})
   }
 }

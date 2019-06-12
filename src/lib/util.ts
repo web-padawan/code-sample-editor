@@ -48,30 +48,6 @@ const establishMessageChannelHandshake = (messageTarget: ServiceWorker | Window)
   });
 };
 
-export const recieveMessageChannelHandshake = (messageTarget = window):Promise<MessagePort> => {
-  return new Promise((res) => {
-    const onMessage = (e: MessageEvent) => {
-      const data:Message = e.data;
-
-      if (data.type === MESSAGE_TYPES.ESTABLISH_HANDSHAKE) {
-        const ports = e.ports;
-        if (ports && ports[0]) {
-          const port = ports[0];
-          port.start();
-          const handshakeReceivedMessage: Message = {
-            type: MESSAGE_TYPES.HANDSHAKE_RECEIVED,
-          }
-          res(port);
-          messageTarget.removeEventListener('message', onMessage);
-          port.postMessage(handshakeReceivedMessage);
-        }
-      }
-    }
-
-    messageTarget.addEventListener('message', onMessage);
-  });
-}
-
 const getSwDir = () => {
   const currentFilepath = import.meta.url;
   const currentFilepathParts = currentFilepath.split('/');

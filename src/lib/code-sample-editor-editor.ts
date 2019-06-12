@@ -1,8 +1,7 @@
 import { customElement, LitElement, html, query, PropertyValues, property, css } from 'lit-element';
 // import monacoStyles from '../monaco_build/monaco.css.js';
 import { AcceptableExtensions, Message } from './types';
-import { editor } from '../../monaco/monaco'
-import { recieveMessageChannelHandshake } from './util';
+import { editor } from 'monaco-editor'
 import * as Comlink from 'comlink';
 import { MonacoIframe } from './monaco-iframe-script';
 

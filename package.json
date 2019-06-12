@@ -5,9 +5,9 @@
   "module": "lib/index.js",
   "scripts": {
     "build": "tsc && rollup -c rollup.config.js",
-    "watch": "tsc-watch --onSuccess \"rollup -c rollup-sw.config.js\"",
+    "watch": "tsc-watch --onSuccess \"rollup -c rollup.config.js\"",
     "serve": "polyserve --npm -H 0.0.0.0 --compile never",
-    "dev": "npm run build && npm run watch & npm run serve",
+    "dev": "npm run watch & npm run serve",
     "prepublishOnly": "npm run build"
   },
   "author": "",
