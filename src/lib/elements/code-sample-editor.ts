@@ -9,8 +9,8 @@ import {
   queryAll
 } from 'lit-element';
 import { until } from 'lit-html/directives/until';
-import { FileRecord, CodeSampleEditorTextarea, RemoteSw } from './types';
-import { EMPTY_INDEX } from './constants';
+import { FileRecord, CodeSampleEditorTextarea, RemoteSw } from '../utils/types';
+import { EMPTY_INDEX } from '../utils/constants';
 import {
   endWithSlash,
   generateUniqueSessionId,
@@ -20,7 +20,7 @@ import {
   reloadIframe,
   connectToServiceWorker,
   clearSwContentsAndSave
-} from './util';
+} from '../utils/util';
 import './code-sample-editor-layout';
 
 @customElement('code-sample-editor')
@@ -60,8 +60,9 @@ export class CodeSampleEditor extends LitElement {
     const fileRecords = await projectFetched;
     let firstEditor = true;
     let index = 0;
+    const visibleRecords = fileRecords.filter(record => !record.invisible);
 
-    const tabs: TemplateResult[] = fileRecords.map(fileRecord => {
+    const tabs: TemplateResult[] = visibleRecords.map(fileRecord => {
       const tResult = html`
         <span
           slot="tab"

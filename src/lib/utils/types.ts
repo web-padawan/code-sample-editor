@@ -1,5 +1,5 @@
 import { Remote } from 'comlink';
-import { SwControllerAPI } from '../sw';
+import { SwControllerAPI } from '../../sw';
 import { MESSAGE_TYPES } from './constants';
 
 declare global {
@@ -57,11 +57,12 @@ export interface FileRecord {
   name: string;
   extension: AcceptableExtensions;
   content: string;
-  isTemplate?: boolean;
+  invisible?: boolean;
 }
 
 export interface FileOptions {
-  isTemplate?: boolean;
+  depLocation?: string;
+  typeLocation?: string;
 }
 export interface ProjectManifest {
   files?: {

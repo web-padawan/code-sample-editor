@@ -4,11 +4,12 @@ import {
   ProjectManifest,
   AcceptableExtensions,
   RemoteSw,
-  CodeSampleEditorTextarea
+  CodeSampleEditorTextarea,
+  FileOptions
 } from './types';
 import { ACCEPTABLE_EXTENSIONS, EMPTY_INDEX, MESSAGE_TYPES } from './constants';
 import { wrap } from 'comlink';
-import { SwControllerAPI } from '../sw';
+import { SwControllerAPI } from '../../sw';
 
 const generateRandomString = (): string => {
   const arr = new Uint32Array(1);
@@ -127,22 +128,22 @@ export const fetchProject = async (
       }[] = [];
 
       for (const filename of filenames) {
-        const [name, extensionRaw] = filename.split('.');
+        const fileOptions: FileOptions = manifest.files![filename];
+        const dotParts = filename.split('.');
+        if (dotParts[0]) {
+          // const packageManifest = await fetchAsJSON(
+          //   `https://unpkg.com/${filename}/package.json`
+          // );
+          // console.log(packageManifest);
+          continue;
+        }
+        const extensionRaw = dotParts.pop();
+        const name = dotParts.join('.').replace(/^\.\//, '');
         if (name && extensionRaw) {
           if (extensionRaw && ACCEPTABLE_EXTENSIONS.includes(extensionRaw)) {
             const extension = extensionRaw as AcceptableExtensions;
             fileMetadata.push({ name, extension });
-            const fileFetched = fetch(`${projectDir}${name}.${extension}`).then(
-              response => {
-                if (response.status === 404) {
-                  throw new Error(
-                    `Could not find file ` + `${projectDir}${name}.${extension}`
-                  );
-                }
-                return response.text();
-              }
-            );
-            filesFetched.push(fileFetched);
+            filesFetched.push(fetchAsText(`${projectDir}${name}.${extension}`));
           } else {
             console.error(
               `Unsupported file extension ${extensionRaw} in ` +
@@ -169,6 +170,7 @@ export const fetchProject = async (
       for (let i = 0; i < fileContents.length; i++) {
         const fileContent = fileContents[i];
         const metadata = fileMetadata[i];
+        console.log(metadata.name);
         const fileRecord: FileRecord = {
           name: metadata.name,
           extension: metadata.extension,
@@ -190,6 +192,14 @@ export const fetchProject = async (
     console.error(e);
     return [EMPTY_INDEX];
   }
+};
+
+const fetchAsText = (location: string): Promise<string> => {
+  return fetch(location).then(res => res.text());
+};
+
+const fetchAsJSON = (location: string): Promise<string> => {
+  return fetch(location).then(res => res.json());
 };
 
 export const addFileRecordFromName = (

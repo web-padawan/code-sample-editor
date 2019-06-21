@@ -5,11 +5,30 @@
     <script type="module" src="../lib/code-sample-editor.js"></script>
   </head>
   <body>
-    <code-sample-editor project-path="./templates/basic"></code-sample-editor>
-    <code-sample-editor project-path="./templates/basic"></code-sample-editor>
-    <code-sample-editor
-      project-path="./templates/basic"
-      sandbox-scope="myScope"
-    ></code-sample-editor>
+    <div>
+      <h1>Javascript</h1>
+      <div>
+        <div>Multiple on one page</div>
+        <code-sample-editor
+          project-path="./templates/basic"
+        ></code-sample-editor>
+        <code-sample-editor
+          project-path="./templates/basic"
+        ></code-sample-editor>
+      </div>
+      <div>
+        <div>Configurable SW scope</div>
+        <code-sample-editor
+          project-path="./templates/basic"
+          sandbox-scope="myScope"
+        ></code-sample-editor>
+      </div>
+    </div>
+    <div>
+      <h1>Typescript</h1>
+      <code-sample-editor
+        project-path="./templates/typescript"
+      ></code-sample-editor>
+    </div>
   </body>
 </html>

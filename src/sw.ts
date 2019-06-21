@@ -1,7 +1,7 @@
-import { Message, FileRecord } from './lib/types';
-import { endWithSlash } from './lib/util';
+import { Message, FileRecord } from './lib/utils/types';
+import { endWithSlash } from './lib/utils/util';
 import { expose } from 'comlink';
-import { MESSAGE_TYPES } from './lib/constants';
+import { MESSAGE_TYPES } from './lib/utils/constants';
 
 const swScope = self as ServiceWorkerGlobalScope;
 

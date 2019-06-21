@@ -1,0 +1,20 @@
+{
+  "files": {
+    "./my-element.ts": {},
+    "./index.html": {},
+    "./my-second-element.ts": {},
+    "lit-element": {
+      "depLocation": "https://unpkg.com/lit-element@2.2.0/lit-element.js",
+      "typeLocation": "https://unpkg.com/lit-element@2.2.0/lit-element.d.ts"
+    },
+    "lit-html": {
+      "depLocation": "https://unpkg.com/lit-html@^1.0.0/lit-html.js"
+    },
+    "lit-html/lib/shady-render.js": {
+      "depLocation": "https://unpkg.com/lit-html@^1.0.0/lib/shady-render.js"
+    },
+    "lit-html/lit-html.js": {
+      "depLocation": "https://unpkg.com/lit-html@^1.0.0/lit-html.js"
+    }
+  }
+}
