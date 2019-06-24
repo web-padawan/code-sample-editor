@@ -2,7 +2,7 @@
   "name": "@polymer/code-sample-editor",
   "version": "0.0.1",
   "description": "",
-  "module": "lib/index.js",
+  "module": "lib/elements/code-sample-editor.js",
   "scripts": {
     "build": "tsc && rollup -c rollup.config.js",
     "watch": "tsc-watch --onSuccess \"rollup -c rollup.config.js\"",

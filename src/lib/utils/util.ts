@@ -58,6 +58,7 @@ const getSwDir = () => {
   const currentFilepathParts = currentFilepath.split('/');
   currentFilepathParts.pop();
   currentFilepathParts.pop();
+  currentFilepathParts.pop();
   return currentFilepathParts.join('/');
 };
 
@@ -194,7 +195,7 @@ export const fetchProject = async (
   }
 };
 
-const fetchAsText = (location: string): Promise<string> => {
+export const fetchAsText = (location: string): Promise<string> => {
   return fetch(location).then(res => res.text());
 };
 
