@@ -3,3 +3,5 @@
 sw.js*
 sw.d.ts
 /lib/
+test/**/*.js
+test/**/*.d.ts

@@ -16,13 +16,6 @@
     "target": "esNext",
     "experimentalDecorators": true
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "custom_typings/**/*.d.ts",
-  ],
-  "exclude": [
-    "test/fixtures/**/*.*",
-    "node_modules/**/*"
-  ]
+  "include": ["src/**/*.ts", "custom_typings/**/*.d.ts"],
+  "exclude": ["src/test/fixtures/**/*.*", "node_modules/**/*"]
 }

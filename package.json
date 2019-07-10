@@ -10,12 +10,32 @@
     "dev": "npm run watch & npm run serve",
     "prepublishOnly": "npm run build",
     "postinstall": "npm run bootstrap",
-    "bootstrap": "cp node_modules/comlink/dist/umd/comlink.js lib/comlink.js"
+    "bootstrap": "cp node_modules/comlink/dist/umd/comlink.js lib/comlink.js",
+    "test": "npm run build && node test/run-karma-with-proxy.js --single-run",
+    "test-open": "node test/run-karma-with-proxy.js",
+    "test-watch": "tsc-watch --onSuccess \"rollup -c rollup.config.js && npm run test-open\""
   },
   "author": "",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "karma": "^4.1.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-mocha": "^1.3.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-source-map-support": "^1.4.0",
+    "karma-typescript": "^4.1.1",
+    "koa": "^2.7.0",
+    "koa-mount": "^4.0.0",
+    "koa-node-resolve": "^1.0.0-pre.5",
+    "koa-proxy": "^1.0.0-alpha.2",
+    "mocha": "^6.1.4",
     "polyserve": "^0.27.15",
+    "portfinder": "^1.0.20",
     "rollup": "^1.14.4",
     "rollup-plugin-node-resolve": "^5.0.1",
     "tsc-watch": "^2.2.1",
@@ -23,7 +43,6 @@
   },
   "dependencies": {
     "comlink": "^4.0.1",
-    "lit-element": "^2.1.0",
-    "lit-html": "^1.0.0"
+    "lit-element": "^2.1.0"
   }
 }
