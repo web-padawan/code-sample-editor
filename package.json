@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "comlink": "^4.0.1",
+    "prismjs": "1.17.1",
     "lit-element": "^2.1.0",
     "lit-html": "^1.0.0"
   }

@@ -7,6 +7,7 @@ import {
   TemplateResult,
   query
 } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { until } from 'lit-html/directives/until';
 import { FileRecord, RemoteSw } from './types';
 import { EMPTY_INDEX } from './constants';
@@ -18,6 +19,14 @@ import {
   clearSwContentsAndSave
 } from './util';
 import './code-sample-editor-layout';
+
+import 'prismjs';
+import 'prismjs/components/prism-js-templates';
+
+// @ts-ignore
+const { highlight, languages } = Prism;
+
+import prismTheme from './prism-theme';
 
 @customElement('code-sample-editor')
 export class CodeSampleEditor extends LitElement {
@@ -54,6 +63,18 @@ export class CodeSampleEditor extends LitElement {
     let index = 0;
 
     const tabs: TemplateResult[] = fileRecords.map(fileRecord => {
+      let grammar;
+
+      switch (fileRecord.extension) {
+        case 'js':
+          grammar = languages.javascript;
+          break;
+        default:
+          grammar = languages.markup;
+      }
+
+      const formatted = unsafeHTML(highlight(fileRecord.content, grammar, fileRecord.extension));
+
       const tResult = html`
         <span
           slot="tab"
@@ -62,15 +83,13 @@ export class CodeSampleEditor extends LitElement {
         >
           ${fileRecord.name}.${fileRecord.extension}
         </span>
-        <code
+        <pre
           slot="editor"
           class=${'link-' + index.toString()}
           ?selected=${firstEditor}
           .name=${fileRecord.name}
           .extension=${fileRecord.extension}
-        >
-          <pre>${fileRecord.content}</pre>
-        </code>
+          ><code>${formatted}</code></pre>
       `;
 
       firstEditor = false;
@@ -99,31 +118,34 @@ export class CodeSampleEditor extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        display: block;
-        height: 350px;
-      }
+    return [
+      prismTheme,
+      css`
+        :host {
+          display: block;
+          height: 350px;
+        }
 
-      #wrapper {
-        display: flex;
-        width: 100%;
-        height: 100%;
-      }
+        #wrapper {
+          display: flex;
+          width: 100%;
+          height: 100%;
+        }
 
-      code-sample-editor-layout {
-        width: 50%;
-      }
+        code-sample-editor-layout {
+          width: 50%;
+        }
 
-      iframe {
-        height: 100%;
-        width: 50%;
-      }
+        iframe {
+          height: 100%;
+          width: 50%;
+        }
 
-      pre {
-        margin: 0;
-      }
-    `;
+        pre {
+          margin: 0;
+        }
+      `
+    ];
   }
 
   render() {
