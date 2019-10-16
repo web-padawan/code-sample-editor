@@ -5,19 +5,15 @@ import {
   css,
   property,
   TemplateResult,
-  query,
-  queryAll
+  query
 } from 'lit-element';
 import { until } from 'lit-html/directives/until';
-import { FileRecord, CodeSampleEditorTextarea, RemoteSw } from './types';
+import { FileRecord, RemoteSw } from './types';
 import { EMPTY_INDEX } from './constants';
 import {
   endWithSlash,
   generateUniqueSessionId,
   fetchProject,
-  addFileRecordFromName,
-  getFileRecordsFromTextareas,
-  reloadIframe,
   connectToServiceWorker,
   clearSwContentsAndSave
 } from './util';
@@ -34,10 +30,6 @@ export class CodeSampleEditor extends LitElement {
   @query('#editorIframe')
   editorFrame?: HTMLIFrameElement;
 
-  @queryAll('code-sample-editor-layout textarea')
-  editorTextareas!: NodeListOf<CodeSampleEditorTextarea>;
-
-  private shouldRenderFrame = false;
   private lastProjectPath?: string;
   private lastSandboxScope: string | null = null;
   private projectContentsReady: Promise<FileRecord[]> = Promise.resolve([
@@ -54,7 +46,7 @@ export class CodeSampleEditor extends LitElement {
     }
   }
 
-  private async generateEditorDom(
+  private async generateViewerDom(
     projectFetched: Promise<FileRecord[]>
   ): Promise<TemplateResult[]> {
     const fileRecords = await projectFetched;
@@ -70,15 +62,15 @@ export class CodeSampleEditor extends LitElement {
         >
           ${fileRecord.name}.${fileRecord.extension}
         </span>
-        <textarea
+        <code
           slot="editor"
           class=${'link-' + index.toString()}
           ?selected=${firstEditor}
-          .value=${fileRecord.content}
           .name=${fileRecord.name}
           .extension=${fileRecord.extension}
         >
-        </textarea>
+          <pre>${fileRecord.content}</pre>
+        </code>
       `;
 
       firstEditor = false;
@@ -87,30 +79,6 @@ export class CodeSampleEditor extends LitElement {
     });
 
     return tabs;
-  }
-
-  private onSave() {
-    const fileRecords = getFileRecordsFromTextareas(this.editorTextareas);
-    this.projectContentsReady = clearSwContentsAndSave(
-      fileRecords,
-      this.remoteSw,
-      this.sessionId
-    );
-    reloadIframe(this.editorFrame!);
-  }
-
-  private async onCreateFile(e: CustomEvent) {
-    const rawFileName: string | undefined = e.detail;
-    const oldFileRecords = getFileRecordsFromTextareas(this.editorTextareas);
-    const newFileRecords = addFileRecordFromName(rawFileName, oldFileRecords);
-    if (newFileRecords) {
-      this.projectContentsReady = clearSwContentsAndSave(
-        newFileRecords,
-        this.remoteSw,
-        this.sessionId
-      );
-      this.requestUpdate();
-    }
   }
 
   private async generateIframe(
@@ -151,6 +119,10 @@ export class CodeSampleEditor extends LitElement {
         height: 100%;
         width: 50%;
       }
+
+      pre {
+        margin: 0;
+      }
     `;
   }
 
@@ -164,7 +136,6 @@ export class CodeSampleEditor extends LitElement {
         this.sessionId,
         this.sandboxScope
       );
-      this.shouldRenderFrame = false;
     }
 
     const isNewProject =
@@ -187,11 +158,8 @@ export class CodeSampleEditor extends LitElement {
 
     return html`
       <div id="wrapper">
-        <code-sample-editor-layout
-          @save=${this.onSave}
-          @create-file=${this.onCreateFile}
-        >
-          ${until(this.generateEditorDom(this.projectContentsReady))}
+        <code-sample-editor-layout>
+          ${until(this.generateViewerDom(this.projectContentsReady))}
         </code-sample-editor-layout>
         ${until(this.generateIframe(uiReady, this.remoteSw, this.sessionId))}
       </div>

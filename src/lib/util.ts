@@ -3,8 +3,7 @@ import {
   FileRecord,
   ProjectManifest,
   AcceptableExtensions,
-  RemoteSw,
-  CodeSampleEditorTextarea
+  RemoteSw
 } from './types';
 import { ACCEPTABLE_EXTENSIONS, EMPTY_INDEX, MESSAGE_TYPES } from './constants';
 import { wrap } from 'comlink';
@@ -268,19 +267,6 @@ export const reloadIframe = (iframe: HTMLIFrameElement) => {
   if (iframe.contentWindow) {
     iframe.contentWindow.location.reload();
   }
-};
-
-export const getFileRecordsFromTextareas = (
-  textareas: NodeListOf<CodeSampleEditorTextarea>
-) => {
-  const fileRecords: FileRecord[] = Array.from(textareas).map(e => {
-    const name = e.name;
-    const extension = e.extension;
-    const content = e.value;
-    return { name, extension, content };
-  });
-
-  return fileRecords;
 };
 
 export const clearSwContentsAndSave = async (

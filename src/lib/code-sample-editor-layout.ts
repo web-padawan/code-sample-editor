@@ -1,12 +1,4 @@
-import {
-  LitElement,
-  customElement,
-  html,
-  css,
-  property,
-  query
-} from 'lit-element';
-import { TemplateResult } from 'lit-html';
+import { LitElement, customElement, html, css } from 'lit-element';
 
 @customElement('code-sample-editor-layout')
 export class CodeSampleEditorLayout extends LitElement {
@@ -49,37 +41,6 @@ export class CodeSampleEditorLayout extends LitElement {
         display: none;
       }
     `;
-  }
-
-  @property({ type: Boolean })
-  addFilePrompt = false;
-
-  @query('#filenameInput')
-  filenameInput?: HTMLInputElement;
-
-  private onSubmit(e: Event) {
-    this.dispatchEvent(
-      new CustomEvent('save', {
-        bubbles: true,
-        composed: true
-      })
-    );
-  }
-
-  private onCreateFileClick(e: Event) {
-    this.dispatchEvent(
-      new CustomEvent('create-file', {
-        bubbles: true,
-        composed: true,
-        detail: this.filenameInput!.value
-      })
-    );
-
-    this.addFilePrompt = false;
-  }
-
-  private onAddFileClick(e: Event) {
-    this.addFilePrompt = true;
   }
 
   private onTabClick(e: Event) {
@@ -125,34 +86,14 @@ export class CodeSampleEditorLayout extends LitElement {
     }
   }
 
-  renderAddFile(): TemplateResult {
-    if (this.addFilePrompt) {
-      return html`
-        <input
-          id="filenameInput"
-          placeholder="file name e.g. my-element-3.js"
-        />
-        <button @click=${this.onCreateFileClick}>Create File</button>
-      `;
-    } else {
-      return html`
-        <button @click=${this.onAddFileClick}>Add File</button>
-      `;
-    }
-  }
-
   render() {
     return html`
       <div id="root">
         <div id="tabs" @click=${this.onTabClick}>
           <slot name="tab"></slot>
-          ${this.renderAddFile()}
         </div>
         <div id="editAreas">
           <slot name="editor"></slot>
-        </div>
-        <div>
-          <button @click=${this.onSubmit}>Save</button>
         </div>
       </div>
     `;
